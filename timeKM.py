@@ -29,6 +29,7 @@ import datetime
 
 # 正規表現パターン
 # [yyyy/MM/dd hh:mm:ss]または[yyyy-MM-dd hh:mm:ss]にヒットする。(/|-)で、/か-で区切られた日付にヒットする。また、?:を付けるとグループ化されない
+# 秒は小数点まで把握可能。ただし、μs単位までしか認識しないので注意してください。
 reDateGroupedPattern = re.compile(r'(?P<time>(?P<date>(?P<year>\d{4})(?:/|-)(?P<month>\d{1,2})(?:/|-)(?P<day>\d{1,2}))\ (?P<clock>(?P<hour>\d{1,2}):(?P<minute>\d{1,2}):(?P<sec>\d{1,2})([.](?P<microsecond>\d+))?))')
 # hoge
 
