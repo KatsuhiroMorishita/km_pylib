@@ -21,6 +21,7 @@
 #               2012/12/25  Get_Delimited_hhmmss_From_hhmmss()とCompareTime()を追加
 #               2013/1/4    一部の文字処理でエラーが出ていたのを修正した。
 #                           reDateGroupedPatternがss.ssssにもマッチするように変更し、getTime()が時刻をμ秒単位まで認識するようにした。
+#               2013/5/17   日付と時刻の間にある半角スペースが複数でもヒットするように変更した。
 #-------------------------------------------------------------------------------
 #!/usr/bin/env python
 
@@ -30,7 +31,7 @@ import datetime
 # 正規表現パターン
 # [yyyy/MM/dd hh:mm:ss]または[yyyy-MM-dd hh:mm:ss]にヒットする。(/|-)で、/か-で区切られた日付にヒットする。また、?:を付けるとグループ化されない
 # 秒は小数点まで把握可能。ただし、μs単位までしか認識しないので注意してください。
-reDateGroupedPattern = re.compile(r'(?P<time>(?P<date>(?P<year>\d{4})(?:/|-)(?P<month>\d{1,2})(?:/|-)(?P<day>\d{1,2}))\ (?P<clock>(?P<hour>\d{1,2}):(?P<minute>\d{1,2}):(?P<sec>\d{1,2})([.](?P<microsecond>\d+))?))')
+reDateGroupedPattern = re.compile(r'(?P<time>(?P<date>(?P<year>\d{4})(?:/|-)(?P<month>\d{1,2})(?:/|-)(?P<day>\d{1,2}))\ +(?P<clock>(?P<hour>\d{1,2}):(?P<minute>\d{1,2}):(?P<sec>\d{1,2})([.](?P<microsecond>\d+))?))')
 # hoge
 
 # 各種定数
