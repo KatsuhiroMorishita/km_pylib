@@ -18,6 +18,7 @@
 #                           また、RMC用のパターンを用意した。
 #               2013/4/8    getTotalOfSeconds()においてエラーへの対処がなかったので追加した。
 #                           reZDAgroupPatternに、全体にヒットするグループ<sentence>を追加した。
+#               2013/5/28   GGAセンテンスのパターンで、高さが負値になった場合というパターンが抜けていたので修正した。
 #-------------------------------------------------------------------------------
 
 import sys                          # argv を取得するため
@@ -33,8 +34,8 @@ reRMCpattern      = re.compile(r'\$GPRMC,\d+(?:\.\d+)?,[AV],\d+\.\d+,[NS],\d+\.\
 reRMCgroupPattern = re.compile(r'(?P<sentence>\$GPRMC,(?P<clock>\d+(?:\.\d+)?),[AV],(?P<lat>\d+\.\d+),(?P<NorS>[NS]),(?P<lon>\d+\.\d+),(?P<EorW>[EW]),(?P<GroundSpeed>\d+\.\d+)?,(?P<directin>\d+\.\d+)?,(?P<ddMMyy>\d{6}),(?P<geomagneticDeclinationAngle>\d+\.\d+)?,(?P<GD_EorW>[EW])?,(?P<fixMode>[ADN])\*)')
 reVTGpattern      = re.compile(r'\$GPVTG,(?:\d+\.\d+)?,T,.*,M,\d+\.\d+,N,\d+\.\d+,K,.*\*')                                                  # VTGセンテンスを文字列から発見する正規表現
 reVTGgroupPattern = re.compile(r'(?P<sentence>\$GPVTG,(?P<degree>\d+\.\d+)?,T,.*,M,\d+\.\d+,N,(?P<velocity_kmPh>\d+\.\d+),K,.*\*)')
-reGGApattern      = re.compile(r'\$GPGGA,\d+\.\d+,\d+\.\d+,[NS],\d+\.\d+,[EW],\d,\d+,\d+\.\d+,\d+\.\d,M,\d+\.\d,M,(?:\d+\.\d)?,\d*\*')      # GGAセンテンスを文字列から発見する正規表現
-reGGAgroupPattern = re.compile(r'(?P<sentence>\$GPGGA,(?P<clock>\d+\.\d+),(?P<lat>\d+\.\d+),(?P<NorS>[NS]),(?P<lon>\d+\.\d+),(?P<EorW>[EW]),(?P<Fix_Mode>\d),(?P<SVs_Used>\d+),(?P<HDOP>\d+\.\d+),(?P<Alt_MSL>\d+\.\d),M,(?P<Alt_Geoid>\d+\.\d),M,(\d+\.\d)?,\d*\*)')  # GGAセンテンスを文字列から発見する正規表現
+reGGApattern      = re.compile(r'\$GPGGA,\d+\.\d+,\d+\.\d+,[NS],\d+\.\d+,[EW],\d,\d+,\d+\.\d+,-?\d+\.\d,M,-?\d+\.\d,M,(?:\d+\.\d)?,\d*\*')      # GGAセンテンスを文字列から発見する正規表現
+reGGAgroupPattern = re.compile(r'(?P<sentence>\$GPGGA,(?P<clock>\d+\.\d+),(?P<lat>\d+\.\d+),(?P<NorS>[NS]),(?P<lon>\d+\.\d+),(?P<EorW>[EW]),(?P<Fix_Mode>\d),(?P<SVs_Used>\d+),(?P<HDOP>\d+\.\d+),(?P<Alt_MSL>-?\d+\.\d),M,(?P<Alt_Geoid>-?\d+\.\d),M,(\d+\.\d)?,\d*\*)')  # GGAセンテンスを文字列から発見する正規表現
 reZDApattern      = re.compile(r'\$GPZDA,\d+\.\d+,\d\d,\d\d,\d\d\d\d,\d\d,\d\d\*')                                                          # ZDAセンテンスを文字列から発見する正規表現
 reZDAgroupPattern = re.compile(r'(?P<sentence>\$GPZDA,(?P<clock>\d+\.\d+),(?P<day>\d\d),(?P<month>\d\d),(?P<year>\d\d\d\d),\d\d,\d\d\*)')   # ZDAの中身をさらにグループ分けするのに使用するパターン。これだけだと、findallで検索かけた結果がタプルのリストとして返るので文字列結合が簡単に書けない。）
 # 全NMEAを抽出するパターン
