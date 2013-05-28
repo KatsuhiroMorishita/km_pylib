@@ -18,8 +18,8 @@ import datetime
 import re
 import timeKM
 
-reDataPattern        = re.compile(r'\d{4}/\d{1,2}/\d{1,2} \d{1,2}:\d{1,2}:\d{1,2},-?\d+\.\d+,\d+\.\d+,\d+\.\d,\d+')
-reDataGroupedPattern = re.compile(r'(?P<date>(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})) (?P<clock>(?P<hour>\d{1,2}):(?P<minute>\d{1,2}):(?P<second>\d{1,2})),(?P<other>(?P<SCP1000_Temperature>-?\d+\.\d+),(?P<SCP1000_Pressure>\d+\.\d+),(?P<Thermistor_Temperature>\d+\.\d),(?P<brightness>\d+))')
+reDataPattern        = re.compile(r'\d{4}/\d{1,2}/\d{1,2} \d{1,2}:\d{1,2}:\d{1,2},-?\d+\.\d+,\d+\.\d+,-?\d+\.?\d*,\d+')# AD変換値にはマイナスは付かないのだが、ここではキャリブレーション後を見越してつけておく
+reDataGroupedPattern = re.compile(r'(?P<date>(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})) (?P<clock>(?P<hour>\d{1,2}):(?P<minute>\d{1,2}):(?P<second>\d{1,2})),(?P<other>(?P<SCP1000_Temperature>-?\d+\.\d+),(?P<SCP1000_Pressure>\d+\.\d+),(?P<Thermistor_Temperature>-?\d+\.?\d*),(?P<brightness>\d+))')
 
 class PressureLogger:
     def __init__(self):
