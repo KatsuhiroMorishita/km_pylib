@@ -10,6 +10,7 @@
 # Copyright:   (c) morishita 2013
 # Licence:     new BSD
 # History:      2013/1/11   4分位数の計算時に、リストの数に下限を設けた。
+#               2014/2/11   暗号理論の講義でRubyにて作ったfactorize()を移植した。
 #-------------------------------------------------------------------------------
 import math
 
@@ -258,11 +259,38 @@ def test(sample):
     _2drms2 = TwiceDrms2(sample)
     return (_mean, _mean2, _quantile, _sd, _sd3, _2drms2)
 
+def factorize(n):
+    """ 素因数分解を行う
+    A * B の形まで分解します。
+    公開鍵暗号を解く演習問題レベルなら問題ありません。
+    """
+    #print(n)
+    x = int(math.sqrt(n)) + 1
+    y = 0
+    z = 0
+    while(1):
+        z = x * x - n
+        y = math.sqrt(z)
+        if (y - int(y)) != 0:
+            x += 1
+        if (x + y) * (x - y) == n:
+            break
+    return (x + y, x - y)
+
 def main():
     # とある気圧の観測データ [hPa], 1 Hz sampling
     baro = [932.08,932.09,932.09,932.1,932.09,932.09,932.08,932.14,932.09,932.08,932.13,932.02,932.11,932.09,932.08,932.11,932.07,932.11,932.08,932.11,931.95,932.1,932.1,932.1,932.07,932.08]
     result = test(baro)
     print(result)
-    pass
+    
+    # 素因数分解
+    hoge = 8550349 * 3607151
+    print(factorize(hoge))
+    #import sympy                        # 標準パッケージを使った場合
+    #hoge = 46546135
+    #result = sympy.factorint(hoge)
+    #print(result)
+
+
 if __name__ == '__main__':
     main()

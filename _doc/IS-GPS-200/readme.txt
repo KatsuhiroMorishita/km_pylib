@@ -1,0 +1,1 @@
+IS-GPS-200x is downloaded from http://www.gps.gov/technical/icwg/ .

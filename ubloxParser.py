@@ -19,18 +19,21 @@
 #               2013/4/8    getTotalOfSeconds()においてエラーへの対処がなかったので追加した。
 #                           reZDAgroupPatternに、全体にヒットするグループ<sentence>を追加した。
 #               2013/5/28   GGAセンテンスのパターンで、高さが負値になった場合というパターンが抜けていたので修正した。
+#               2014/2/10   GPSモジュールの名称変更に対応
+#                           動作テストは未実施
+#               2015/1/23   RMCパターンを更新
 #-------------------------------------------------------------------------------
 
 import sys                          # argv を取得するため
 import re                           # 正規表現を使うのでインポート
-import GPS
 import math
+import gnss.gps.coordinate as gcoor
 import timeKM
 
 # 並びは、ublox 6Tのデフォルトの設定を参考にして、NMEAの出力順にソートしている。
 # パターンがセンテンスごとに2つあるのは、各要素毎にグループマッチング取る場合と、センテンス全体のみにヒットさせる用途があるため。
 # 後者はNMEAセンテンスの抽出に使用する。
-reRMCpattern      = re.compile(r'\$GPRMC,\d+(?:\.\d+)?,[AV],\d+\.\d+,[NS],\d+\.\d+,[EW],(?:\d+\.\d+)?,(?:\d+\.\d+)?,\d{6},,,[ADN]\*')
+reRMCpattern      = re.compile(r'\$GPRMC,\d+(?:\.\d+)?,[AV],\d+\.\d+,[NS],\d+\.\d+,[EW],(?:\d+\.\d+)?,(?:\d+\.\d+)?,\d{6},.*,.*,[ADN]\*')
 reRMCgroupPattern = re.compile(r'(?P<sentence>\$GPRMC,(?P<clock>\d+(?:\.\d+)?),[AV],(?P<lat>\d+\.\d+),(?P<NorS>[NS]),(?P<lon>\d+\.\d+),(?P<EorW>[EW]),(?P<GroundSpeed>\d+\.\d+)?,(?P<directin>\d+\.\d+)?,(?P<ddMMyy>\d{6}),(?P<geomagneticDeclinationAngle>\d+\.\d+)?,(?P<GD_EorW>[EW])?,(?P<fixMode>[ADN])\*)')
 reVTGpattern      = re.compile(r'\$GPVTG,(?:\d+\.\d+)?,T,.*,M,\d+\.\d+,N,\d+\.\d+,K,.*\*')                                                  # VTGセンテンスを文字列から発見する正規表現
 reVTGgroupPattern = re.compile(r'(?P<sentence>\$GPVTG,(?P<degree>\d+\.\d+)?,T,.*,M,\d+\.\d+,N,(?P<velocity_kmPh>\d+\.\d+),K,.*\*)')
@@ -72,7 +75,7 @@ def getBLHfromGGA(GGA):
         ellipsoid = msl + geoid                             # 楕円体高
         _lat = float(int(lat / 100.0)) + (lat % 100.0) / 60.0  # 単位を度に統一
         _lon = float(int(lon / 100.0)) + (lon % 100.0) / 60.0
-        return GPS.BLH(_lat, _lon, ellipsoid)
+        return gcoor.BLH(_lat, _lon, ellipsoid)
     return None
 
 def getTotalOfSeconds(GGA):
@@ -140,8 +143,8 @@ def getLowVelocityList(txt, threshold, timeWidthTh = 120.0):
                     timeWidth = getDifferenceOfTOS(getTotalOfSeconds(_endGGA), getTotalOfSeconds(_startGGA))    # 静止期間[s]を計算
                     if timeWidth >= timeWidthTh:                                                                # 十分に長い期間であれば以下を処理
                         print((_startGGA, timeWidth, _start, _end))
-                        lat = GPS.Convert_dddmm2ddd(reGGAgroupPattern.search(_startGGA).group('lat'))           # 緯度・経度を取得する
-                        lon = GPS.Convert_dddmm2ddd(reGGAgroupPattern.search(_startGGA).group('lon'))
+                        lat = gcoor.Convert_dddmm2ddd(reGGAgroupPattern.search(_startGGA).group('lat'))           # 緯度・経度を取得する
+                        lon = gcoor.Convert_dddmm2ddd(reGGAgroupPattern.search(_startGGA).group('lon'))
                         ans.append((_startClock, lat, lon, timeWidth, _start, _end))                            # 抜き出された情報をタプルにして、リストに追加
                 status = False
     return ans
@@ -189,8 +192,8 @@ def getHighVelocityList(txt, velocityThreshold, timeWidthTh = 120.0):
                     timeWidth = getDifferenceOfTOS(getTotalOfSeconds(_endGGA), getTotalOfSeconds(_startGGA))    # 静止期間[s]を計算
                     if timeWidth >= timeWidthTh:                                                                # 十分に長い期間であれば以下を処理
                         print((_startGGA, timeWidth, _start, _end))
-                        lat = GPS.Convert_dddmm2ddd(reGGAgroupPattern.search(_startGGA).group('lat'))           # 緯度・経度を取得する
-                        lon = GPS.Convert_dddmm2ddd(reGGAgroupPattern.search(_startGGA).group('lon'))
+                        lat = gcoor.Convert_dddmm2ddd(reGGAgroupPattern.search(_startGGA).group('lat'))           # 緯度・経度を取得する
+                        lon = gcoor.Convert_dddmm2ddd(reGGAgroupPattern.search(_startGGA).group('lon'))
                         ans.append((_startClock, lat, lon, timeWidth, _start, _end))                            # 抜き出された情報をタプルにして、リストに追加
                 status = False
     return ans

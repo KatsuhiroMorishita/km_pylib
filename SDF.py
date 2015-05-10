@@ -1,17 +1,21 @@
-﻿#-------------------------------------------------------------------------------
-# Name:        module1
-# Purpose:
+﻿#!/usr/bin/env python3
+# -*- coding:utf-8 -*-
+#-------------------------------------------------------------------------------
+# Name:        SDF
+# Purpose: SDF形式の測位座標ログデータを処理する。
 #
 # Author:      morishita
 #
 # Created:     05/09/2012
 # Copyright:   (c) morishita 2012
-# Licence:     <your licence>
+# Licence:     MIT
+#              2014/2/10    GPSモジュールの名称変更に対応
+#                           動作テストは未実施
 #-------------------------------------------------------------------------------
 #!/usr/bin/env python
 
 import re
-import GPS
+import gnss.gps.coordinate as gcoor
 import datetime
 
 reSdfPatternd        = re.compile(r',\d{2}\.\d{2}\.\d{4},\d{2}:\d{2}\.\d{2},\d+\.\d+,\d+\.\d+,\d+,\d+\.?\d*,-?\d+,')
@@ -45,7 +49,7 @@ def getPos(line):
         b   = float(matchTest.group('lat'))
         l  = float(matchTest.group('lon'))
         h    = float(matchTest.group('height'))
-        return GPS.BLH(b, l, h)
+        return gcoor.BLH(b, l, h)
     else:
         return None
     return
